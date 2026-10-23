@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.png">
-    <img alt="Record PDF: preview, download, email and save any Filament record as a PDF" src="art/banner-light.png" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/amjadiqbal/filament-record-pdf/main/art/banner-dark.png">
+    <img alt="Record PDF: preview, download, email and save any Filament record as a PDF" src="https://raw.githubusercontent.com/amjadiqbal/filament-record-pdf/main/art/banner-light.png" width="100%">
   </picture>
 </p>
 
@@ -15,7 +15,7 @@ with the pure-PHP **dompdf** driver by default, so it works on any host without 
 [![PHP Version](https://img.shields.io/packagist/php-v/amjadiqbal/filament-record-pdf?style=flat-square)](https://packagist.org/packages/amjadiqbal/filament-record-pdf)
 [![License](https://img.shields.io/packagist/l/amjadiqbal/filament-record-pdf.svg?style=flat-square)](LICENSE.md)
 
-![Previewing an invoice PDF in a Filament modal](art/screenshots/preview-light.png)
+![Previewing an invoice PDF in a Filament modal](https://raw.githubusercontent.com/amjadiqbal/filament-record-pdf/main/art/screenshots/preview-light.png)
 
 ## What you get
 

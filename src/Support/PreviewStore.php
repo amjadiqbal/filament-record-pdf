@@ -6,6 +6,7 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 /**
  * Keeps a rendered PDF for a few minutes so the preview modal's iframe (and its download button)
@@ -23,12 +24,20 @@ class PreviewStore
         $key = Str::random(40);
         $minutes = max(1, (int) config('filament-record-pdf.preview_ttl', 10));
 
-        static::cache()->put(static::PREFIX.$key, [
+        $stored = static::cache()->put(static::PREFIX.$key, [
             'pdf' => base64_encode($pdf),
             'filename' => $filename,
             'user' => $userId,
             'guard' => $guard,
         ], now()->addMinutes($minutes));
+
+        if (! $stored) {
+            throw new RuntimeException(sprintf(
+                'The PDF preview (%d KB) could not be stored in the cache. Set filament-record-pdf.cache_store '
+                .'(RECORD_PDF_CACHE_STORE) to a store that accepts large items, such as file, database or redis.',
+                (int) ceil(strlen($pdf) / 1024),
+            ));
+        }
 
         $expires = now()->addMinutes($minutes);
 

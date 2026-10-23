@@ -28,9 +28,32 @@ class BulkDownloadPdfAction extends BulkAction
 
     protected bool $queueAfterIsSet = false;
 
+    /** @var array<string> */
+    protected array $pdfAnyAbilities = ['downloadAnyPdf', 'viewAny'];
+
     public static function getDefaultName(): ?string
     {
         return 'downloadPdfs';
+    }
+
+    /**
+     * Policy abilities on the model class that decide whether the action shows at all. The first one the policy
+     * defines decides. Each selected record is still checked with pdfAbility() when the action runs.
+     *
+     * @param  string|array<string>  $abilities
+     */
+    public function pdfAnyAbility(string|array $abilities): static
+    {
+        $this->pdfAnyAbilities = (array) $abilities;
+
+        return $this;
+    }
+
+    public function canAccessAnyRecordPdf(): bool
+    {
+        $model = $this->getModel();
+
+        return $model === null || Authorizer::allowsModel($model, $this->pdfAnyAbilities);
     }
 
     public function zipFilename(string|Closure|null $filename): static
@@ -98,6 +121,8 @@ class BulkDownloadPdfAction extends BulkAction
         $this->icon(Heroicon::OutlinedArchiveBoxArrowDown);
 
         $this->deselectRecordsAfterCompletion();
+
+        $this->authorize(fn (): bool => $this->canAccessAnyRecordPdf());
 
         $this->action(function (Collection $records): ?StreamedResponse {
             $max = (int) config('filament-record-pdf.bulk.max_records', 500);

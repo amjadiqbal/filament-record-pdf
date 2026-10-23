@@ -118,7 +118,10 @@ DownloadPdfAction::make()
     ]);
 ```
 
-You can also use the invoice preset (`filament-record-pdf::presets.invoice`) directly, without copying it.
+You can also use the invoice preset (`filament-record-pdf::presets.invoice`) directly, without copying it. Its
+`logo` can be a local file path (for example `public_path('logo.png')`): the preset embeds it as a data URI, because
+dompdf only reads local files inside its chroot. In your own views, embed images the same way or set
+`LARAVEL_PDF_DOMPDF_CHROOT`.
 
 dompdf handles HTML tables, floats and most of CSS 2.1, but not flexbox or grid. Use tables for layout, and the
 bundled "DejaVu Sans" font for non-Latin text. spatie/laravel-pdf's `@pageBreak` directive works in these views.
@@ -148,9 +151,13 @@ File names are cleaned to lowercase letters, digits and dashes, and `.pdf` is ad
 minutes (default 10). Its URL is signed, it expires, and it only works for the user who opened the preview. The
 modal's download button uses the same file. Hide the button with `->downloadButton(false)`.
 
+The PDF is stored base64-encoded, so a store with a small item limit (memcached's default is 1 MB) can refuse a large
+one; the action then says so. Point `RECORD_PDF_CACHE_STORE` at `file`, `database` or `redis` in that case.
+
 ### Email
 
-`EmailPdfAction` shows a form with **To** (up to 10 addresses, separated by commas), **Subject** and **Message**.
+`EmailPdfAction` shows a form with **To** (up to 10 addresses, separated by commas, semicolons or spaces; duplicates
+are removed), **Subject** and **Message**.
 
 ```php
 EmailPdfAction::make()
@@ -158,6 +165,7 @@ EmailPdfAction::make()
     ->defaultSubject(fn (Invoice $record) => "Invoice {$record->number}")
     ->defaultMessage('Please find your invoice attached.')
     ->queueMail()                       // or set filament-record-pdf.mail.queue
+    // the closure can also take Model $record and array $data (the form values)
     ->sendUsing(fn (array $recipients, RecordPdfMail $mail) => Mail::mailer('postmark')->to($recipients)->send($mail));
 ```
 
@@ -198,7 +206,8 @@ disk, and sends the user a Filament database notification with a download link. 
 `bulk.link_hours` (default 24), and only works for that user.
 
 Queueing needs `->databaseNotifications()` on the panel and a running queue worker. The ZIP is always built straight
-away when the panel has no database notifications, or when `modifyPdfUsing()` is set (a closure cannot be queued).
+away when the panel has no database notifications, when no user is signed in, or when `modifyPdfUsing()` is set (a
+closure cannot be queued).
 One download can include up to `bulk.max_records` records (default 500). Records the user may not access are
 skipped, and the user is told how many were skipped.
 
@@ -212,14 +221,17 @@ Each record is checked against its model's policy. The first ability that the po
 | Action | Abilities, in order |
 |---|---|
 | Preview | `viewPdf`, `downloadPdf`, `view` |
-| Download, bulk download | `downloadPdf`, `view` |
+| Download, and each record of a bulk download | `downloadPdf`, `view` |
+| Bulk download button (no record yet) | `downloadAnyPdf`, `viewAny` |
 | Email | `emailPdf`, `view` |
 | Save | `savePdf`, `update` |
 
 So `InvoicePolicy::view()` already guards downloads. Add `downloadPdf()` to the policy if users may view an invoice
 but not download it. If the model has no policy, or the policy defines none of these methods, access to the panel is
-the only check. Actions the user may not use are hidden. Change the abilities with `->pdfAbility()`, or replace the
-check with `->authorizePdfUsing()`.
+the only check. Single-record actions the user may not use are hidden. The bulk action is hidden when the policy's
+`downloadAnyPdf()` or `viewAny()` denies; otherwise it shows, checks each selected record when it runs, skips the ones
+the user may not access and says how many were skipped. Change the abilities with `->pdfAbility()` (and
+`->pdfAnyAbility()` on the bulk action), or replace the record check with `->authorizePdfUsing()`.
 
 ## Drivers
 

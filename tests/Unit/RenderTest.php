@@ -59,3 +59,14 @@ it('renders the invoice preset with totals', function (): void {
 
     expect(RecordPdf::render($html))->toStartWith('%PDF-');
 });
+
+it('embeds a local invoice logo so dompdf\'s chroot does not block it', function (): void {
+    $logo = sys_get_temp_dir().'/record-pdf-logo-'.getmypid().'.png';
+    file_put_contents($logo, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='));
+
+    $html = view('filament-record-pdf::presets.invoice', ['invoice' => ['number' => 'L-1', 'logo' => $logo]])->render();
+    unlink($logo);
+
+    expect($html)->toContain('src="data:image/png;base64,')
+        ->and(RecordPdf::render($html))->toContain('/Subtype /Image');
+});

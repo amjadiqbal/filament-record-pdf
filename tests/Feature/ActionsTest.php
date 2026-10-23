@@ -13,6 +13,8 @@ use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\InvoiceResource;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\ListInvoices;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\ViewInvoice;
 use Filament\Actions\Testing\TestAction;
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -273,4 +275,19 @@ it('saves into a media library collection', function (): void {
 it('parses recipient lists', function (): void {
     expect(EmailPdfAction::parseRecipients(' a@x.test; b@x.test,  a@x.test '))->toBe(['a@x.test', 'b@x.test'])
         ->and(EmailPdfAction::parseRecipients(''))->toBe([]);
+});
+
+it('says clearly when the cache store refuses a large preview', function (): void {
+    Cache::extend('refusing', fn () => Cache::repository(new class extends ArrayStore
+    {
+        public function put($key, $value, $seconds)
+        {
+            return false;
+        }
+    }));
+    config()->set('cache.stores.refusing', ['driver' => 'refusing']);
+    config()->set('filament-record-pdf.cache_store', 'refusing');
+
+    expect(fn () => PreviewPdfAction::make()->getPreviewUrls($this->makeInvoice()))
+        ->toThrow(RuntimeException::class, 'RECORD_PDF_CACHE_STORE');
 });

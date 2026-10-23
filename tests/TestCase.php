@@ -38,6 +38,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         InvoicePolicy::$deny = [];
+        InvoicePolicy::$denyViewAny = false;
         InvoiceResource::$configure = [];
         Gate::policy(Invoice::class, InvoicePolicy::class);
     }

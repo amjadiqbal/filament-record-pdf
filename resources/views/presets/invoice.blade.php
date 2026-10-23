@@ -6,6 +6,7 @@
      *   'items' => [['description' => 'Design', 'quantity' => 2, 'unit_price' => 150]],
      *   'tax_rate' => 10, 'notes' => 'Thank you.', 'logo' => public_path('logo.png'),
      * ]
+     * A local logo file is embedded as a data URI, so dompdf's chroot does not block it.
      */
     $invoice = $invoice ?? [];
     $currency = $invoice['currency'] ?? '';
@@ -14,6 +15,10 @@
     $subtotal = array_sum(array_map(fn ($item) => (float) ($item['quantity'] ?? 1) * (float) ($item['unit_price'] ?? 0), $items));
     $taxRate = (float) ($invoice['tax_rate'] ?? 0);
     $tax = round($subtotal * $taxRate / 100, 2);
+    $logo = $invoice['logo'] ?? null;
+    if (is_string($logo) && is_file($logo) && is_readable($logo)) {
+        $logo = 'data:'.(mime_content_type($logo) ?: 'image/png').';base64,'.base64_encode((string) file_get_contents($logo));
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -41,8 +46,8 @@
     <table class="top">
         <tr>
             <td style="width: 55%">
-                @if (! empty($invoice['logo']))
-                    <img src="{{ $invoice['logo'] }}" style="max-height: 48px; margin-bottom: 10px;" alt="">
+                @if (! empty($logo))
+                    <img src="{{ $logo }}" style="max-height: 48px; margin-bottom: 10px;" alt="">
                 @endif
                 @foreach ($invoice['from'] ?? [config('app.name')] as $line)
                     <div @class(['muted' => ! $loop->first])>@if ($loop->first)<strong>{{ $line }}</strong>@else{{ $line }}@endif</div>

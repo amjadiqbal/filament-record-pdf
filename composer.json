@@ -13,7 +13,7 @@
         "pdf-generation",
         "browsershot"
     ],
-    "homepage": "https://github.com/amjadiqbal/filament-record-pdf",
+    "homepage": "https://amjad.com.pk/filament/plugins/filament-record-pdf",
     "license": "MIT",
     "type": "library",
     "authors": [

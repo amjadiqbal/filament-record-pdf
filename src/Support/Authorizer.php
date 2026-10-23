@@ -35,6 +35,30 @@ class Authorizer
         return true;
     }
 
+    /**
+     * The same rule for a model class (no record yet), for example whether a bulk action may show.
+     *
+     * @param  class-string<Model>  $model
+     * @param  array<string>  $abilities
+     */
+    public static function allowsModel(string $model, array $abilities, ?Authenticatable $user = null): bool
+    {
+        $user ??= static::user();
+        $policy = Gate::getPolicyFor($model);
+
+        if ($policy === null) {
+            return true;
+        }
+
+        foreach ($abilities as $ability) {
+            if (method_exists($policy, $ability)) {
+                return Gate::forUser($user)->allows($ability, $model);
+            }
+        }
+
+        return true;
+    }
+
     public static function user(): ?Authenticatable
     {
         return Filament::auth()->user() ?? auth()->user();

@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-24
+
+### Fixed
+- The bulk ZIP action is now hidden when the model policy's `downloadAnyPdf()` or `viewAny()` denies (new `pdfAnyAbility()`); it used to show and only skip records when run.
+- The invoice preset embeds a local `logo` file as a data URI, so dompdf's chroot no longer drops it.
+- The preview action now reports a clear error when the cache store refuses a large PDF, instead of an empty preview.
+
+### Changed
+- README: recipient separators, the full `sendUsing()` closure signature, the no-user case for queued ZIPs, bulk authorization, image embedding and cache store size.
+- Composer and GitHub homepage point at https://amjad.com.pk/filament/plugins/filament-record-pdf.
+
 ## [1.0.0] - 2026-10-23
 
 ### Added

@@ -9,9 +9,11 @@ class InvoicePolicy
     /** @var array<string, array<int>> ability => denied invoice ids */
     public static array $deny = [];
 
+    public static bool $denyViewAny = false;
+
     public function viewAny(User $user): bool
     {
-        return true;
+        return ! static::$denyViewAny;
     }
 
     public function view(User $user, Invoice $invoice): bool

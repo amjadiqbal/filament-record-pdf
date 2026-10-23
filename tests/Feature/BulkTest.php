@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AmjadIqbal\FilamentRecordPdf\Actions\BulkDownloadPdfAction;
 use AmjadIqbal\FilamentRecordPdf\Jobs\BuildPdfZip;
 use AmjadIqbal\FilamentRecordPdf\Support\PdfRenderOptions;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\Invoice;
@@ -175,4 +176,16 @@ it('signs the queued link for the address the user was on, not APP_URL', functio
         ->and($this->get(str_replace('https://panel.example.test', '', $this->user->notifications()->first()->data['actions'][0]['url']))->assertOk())
         ->and(Storage::disk('local')->exists('record-pdfs/zips/job/x.zip'))->toBeTrue()
         ->and(Storage::disk('local')->exists('record-pdfs/zips/job/html/0.html'))->toBeFalse();
+});
+
+it('hides the bulk action when the policy denies viewAny', function (): void {
+    $this->makeInvoice();
+
+    livewire(ListInvoices::class)->assertActionVisible(TestAction::make('downloadPdfs')->table()->bulk());
+
+    InvoicePolicy::$denyViewAny = true;
+
+    // viewAny also gates the list page itself, so check the action's own rule directly.
+    expect(BulkDownloadPdfAction::make()->model(Invoice::class)->canAccessAnyRecordPdf())->toBeFalse()
+        ->and(BulkDownloadPdfAction::make()->model(Invoice::class)->pdfAnyAbility('notDefinedOnThePolicy')->canAccessAnyRecordPdf())->toBeTrue();
 });

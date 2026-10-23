@@ -34,7 +34,7 @@ class FilamentRecordPdfServiceProvider extends PackageServiceProvider
                     ->name('filament-record-pdf.preview');
 
                 Route::get('zip', ZipDownloadController::class)
-                    ->middleware('signed')
+                    ->middleware('signed:relative')
                     ->name('filament-record-pdf.zip');
             });
     }

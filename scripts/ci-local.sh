@@ -55,7 +55,7 @@ done
 v=8.3; PHP=$(php_bin "$v") && { ln -sf "$PHP" "$SHIM/php"; export PATH="$SHIM:$BASE_PATH"
   DIR="$WORK/lowest-pdf"
   git clone --quiet --no-hardlinks "$REPO" "$DIR" && git -C "$DIR" checkout --quiet --detach "$(git rev-parse HEAD)"
-  step "PHP $v Laravel 12 Filament 4 laravel-pdf 2.14.0 dompdf 3.0 composer update" sh -c "\"$PHP\" \"$COMPOSER\" -d \"$DIR\" require --no-update --no-interaction 'spatie/laravel-pdf:2.14.0' 'dompdf/dompdf:3.0.*' 'filament/filament:^4.0' && \"$PHP\" \"$COMPOSER\" -d \"$DIR\" require --no-update --no-interaction --dev 'orchestra/testbench:^10.0' && \"$PHP\" \"$COMPOSER\" -d \"$DIR\" update -W --no-interaction --no-progress --prefer-dist -q"
+  step "PHP $v Laravel 12 Filament 4 laravel-pdf 2.14.0 dompdf 3.1.6 composer update" sh -c "\"$PHP\" \"$COMPOSER\" -d \"$DIR\" require --no-update --no-interaction 'spatie/laravel-pdf:2.14.0' 'dompdf/dompdf:3.1.6' 'filament/filament:^4.0' && \"$PHP\" \"$COMPOSER\" -d \"$DIR\" require --no-update --no-interaction --dev 'orchestra/testbench:^10.0' && \"$PHP\" \"$COMPOSER\" -d \"$DIR\" update -W --no-interaction --no-progress --prefer-dist -q"
   step "PHP $v laravel-pdf $(resolved "$DIR" spatie/laravel-pdf) dompdf $(resolved "$DIR" dompdf/dompdf) pest" "$PHP" "$COMPOSER" -d "$DIR" test
   rm -rf "$DIR"; }
 

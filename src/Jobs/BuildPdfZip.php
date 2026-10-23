@@ -42,6 +42,7 @@ class BuildPdfZip implements ShouldQueue
         public int|string $notifiableId,
         public ?string $guard = null,
         public ?string $panelId = null,
+        public ?string $rootUrl = null,
     ) {}
 
     public function handle(): void
@@ -65,12 +66,16 @@ class BuildPdfZip implements ShouldQueue
 
         $storage->deleteDirectory($this->workDirectory.'/html');
 
-        $url = URL::temporarySignedRoute('filament-record-pdf.zip', now()->addHours((int) config('filament-record-pdf.bulk.link_hours', 24)), [
+        // A queue worker builds URLs from APP_URL, so sign the path only and put it under the address the user
+        // was on when they asked. The route checks the relative signature.
+        $relative = URL::temporarySignedRoute('filament-record-pdf.zip', now()->addHours((int) config('filament-record-pdf.bulk.link_hours', 24)), [
             'disk' => $this->disk,
             'path' => $path,
             'user' => $this->notifiableId,
             'guard' => $this->guard,
-        ]);
+        ], absolute: false);
+
+        $url = $this->rootUrl ? rtrim($this->rootUrl, '/').$relative : url($relative);
 
         $this->notify(
             Notification::make()

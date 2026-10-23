@@ -200,6 +200,7 @@ class BulkDownloadPdfAction extends BulkAction
             notifiableId: $user->getAuthIdentifier(),
             guard: Authorizer::guardName(),
             panelId: Filament::getCurrentOrDefaultPanel()?->getId(),
+            rootUrl: url('/'),
         );
 
         dispatch($job

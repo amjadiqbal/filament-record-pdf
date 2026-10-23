@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AmjadIqbal\FilamentRecordPdf\Jobs\BuildPdfZip;
+use AmjadIqbal\FilamentRecordPdf\Support\PdfRenderOptions;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\Invoice;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\InvoicePolicy;
 use AmjadIqbal\FilamentRecordPdf\Tests\Fixtures\InvoiceResource;
@@ -145,10 +147,32 @@ it('serves only ZIPs inside the zip directory, even with a valid signature', fun
 
     $sign = fn (string $path, string $disk = 'local') => URL::temporarySignedRoute('filament-record-pdf.zip', now()->addHour(), [
         'disk' => $disk, 'path' => $path, 'user' => $this->user->id, 'guard' => 'web',
-    ]);
+    ], absolute: false);
 
     $this->get($sign('.env'))->assertNotFound();
     $this->get($sign('record-pdfs/zips/../../.env'))->assertNotFound();
     $this->get($sign('record-pdfs/zips/x/a.zip', 'public'))->assertNotFound();
     $this->get($sign('record-pdfs/zips/x/a.zip'))->assertOk();
+});
+
+it('signs the queued link for the address the user was on, not APP_URL', function (): void {
+    Storage::fake('local');
+    Storage::disk('local')->put('record-pdfs/zips/job/html/0.html', '<p>x</p>');
+
+    (new BuildPdfZip(
+        disk: 'local',
+        workDirectory: 'record-pdfs/zips/job',
+        zipName: 'x.zip',
+        entries: [['html' => 'record-pdfs/zips/job/html/0.html', 'name' => 'a.pdf', 'options' => PdfRenderOptions::defaults()]],
+        notifiableType: $this->user::class,
+        notifiableId: $this->user->id,
+        guard: 'web',
+        rootUrl: 'https://panel.example.test',
+    ))->handle();
+
+    expect($this->user->notifications()->first()->data['actions'][0]['url'])->toStartWith('https://panel.example.test/filament-record-pdf/zip?')
+        ->and(url('/'))->toBe('http://localhost')
+        ->and($this->get(str_replace('https://panel.example.test', '', $this->user->notifications()->first()->data['actions'][0]['url']))->assertOk())
+        ->and(Storage::disk('local')->exists('record-pdfs/zips/job/x.zip'))->toBeTrue()
+        ->and(Storage::disk('local')->exists('record-pdfs/zips/job/html/0.html'))->toBeFalse();
 });

@@ -125,13 +125,34 @@ def social():
     return svg(1280, 640, body, t)
 
 
+def directory():
+    """16:9 LIGHT listing image for filamentphp.com: name and tagline beside a real crop of the preview modal
+    (screenshots/preview-modal-light.png, taken from the L13/F5 test panel). Authored at 1280x720, rendered 2x."""
+    t = THEMES["light"]
+    body = f"""  <g transform="translate(70,90) scale(0.21)">{icon_body()}</g>
+  <text x="70" y="270" font-family="{FONT}" font-size="58" font-weight="700" fill="{t['title']}">{TITLE}</text>
+  <text x="72" y="312" font-family="{FONT}" font-size="21" font-weight="500" fill="{t['accent']}">Any Filament record as a PDF</text>
+  <g font-family="{FONT}" font-size="18" fill="{t['chip_text']}">
+    <text x="72" y="380">• Preview in a modal, download, email</text>
+    <text x="72" y="414">• Save to a disk, a column or media</text>
+    <text x="72" y="448">• Bulk download as a ZIP, queued</text>
+    <text x="72" y="482">• Your Blade view, dompdf by default</text>
+    <text x="72" y="516">• Policies per record · Filament 4 · 5</text>
+  </g>
+  <rect x="553" y="53" width="694" height="606" rx="14" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <clipPath id="shot"><rect x="562" y="61" width="676" height="590" rx="12"/></clipPath>
+  <image href="screenshots/preview-modal-light.png" x="556" y="56" width="688" height="600" preserveAspectRatio="xMidYMid meet" clip-path="url(#shot)"/>
+  <text x="72" y="680" font-family="{FONT}" font-size="15" fill="{t['pkg']}">{PKG}</text>"""
+    return svg(1280, 720, body, t)
+
+
 def icon():
     return f'<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">\n{defs(THEMES["dark"])}\n<g>{icon_body()}</g>\n</svg>\n'
 
 
 if __name__ == "__main__":
     files = {"icon.svg": icon(), "banner-light.svg": banner("light"), "banner-dark.svg": banner("dark"),
-             "social-preview.svg": social()}
+             "social-preview.svg": social(), "filament-directory.svg": directory()}
     for f, s in files.items():
         with open(os.path.join(HERE, f), "w") as fh:
             fh.write(s)

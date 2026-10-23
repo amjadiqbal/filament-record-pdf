@@ -1,0 +1,61 @@
+<?php
+
+return [
+    'preview' => [
+        'label' => 'Preview PDF',
+        'close' => 'Close',
+        'fallback' => 'PDF not showing?',
+        'open' => 'Open it in a new tab',
+    ],
+    'download' => [
+        'label' => 'Download PDF',
+    ],
+    'email' => [
+        'label' => 'Email PDF',
+        'heading' => 'Email :file',
+        'submit' => 'Send',
+        'to' => 'To',
+        'to_help' => 'Separate several addresses with commas (up to 10).',
+        'to_count' => 'Enter between 1 and 10 email addresses.',
+        'to_invalid' => '":email" is not a valid email address.',
+        'subject' => 'Subject',
+        'message' => 'Message',
+        'sent' => ':file sent to :count recipient(s)',
+        'attached' => 'The PDF ":file" is attached.',
+    ],
+    'save' => [
+        'label' => 'Save PDF',
+        'heading' => 'Save :file',
+        'description' => 'Generate the PDF now and store it with this record.',
+        'saved' => 'PDF saved',
+    ],
+    'bulk' => [
+        'label' => 'Download PDFs (ZIP)',
+        'too_many' => 'Select at most :max records for one download.',
+        'none_allowed' => 'You are not allowed to download PDFs for the selected records.',
+        'no_zip' => 'The PHP zip extension is not installed, so a ZIP cannot be built.',
+        'skipped' => ':count record(s) skipped: not allowed',
+        'queued' => 'Building :count PDFs. You will get a notification with the download link.',
+        'ready' => 'Your ZIP of :count PDFs is ready',
+        'download_zip' => 'Download ZIP',
+        'failed' => 'The PDF ZIP could not be built',
+    ],
+    'pdf' => [
+        'generated' => 'Generated :date',
+        'yes' => 'Yes',
+        'no' => 'No',
+    ],
+    'invoice' => [
+        'title' => 'Invoice',
+        'date' => 'Date',
+        'due' => 'Due',
+        'bill_to' => 'Bill to',
+        'description' => 'Description',
+        'quantity' => 'Qty',
+        'unit_price' => 'Unit price',
+        'amount' => 'Amount',
+        'subtotal' => 'Subtotal',
+        'tax' => 'Tax (:rate%)',
+        'total' => 'Total',
+    ],
+];

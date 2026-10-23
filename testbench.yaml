@@ -1,0 +1,3 @@
+providers:
+  - Spatie\LaravelPdf\PdfServiceProvider
+  - AmjadIqbal\FilamentRecordPdf\FilamentRecordPdfServiceProvider

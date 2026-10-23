@@ -1,0 +1,83 @@
+{
+    "name": "amjadiqbal/filament-record-pdf",
+    "description": "Preview, download, bulk-download as ZIP, email and save any Filament 4/5 record as a PDF from a Blade view. Built on spatie/laravel-pdf, dompdf by default.",
+    "keywords": [
+        "filament",
+        "filament-plugin",
+        "filamentphp",
+        "laravel",
+        "pdf",
+        "laravel-pdf",
+        "dompdf",
+        "invoice",
+        "pdf-generation",
+        "browsershot"
+    ],
+    "homepage": "https://github.com/amjadiqbal/filament-record-pdf",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Amjad Iqbal",
+            "homepage": "https://amjad.com.pk",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/amjadiqbal/filament-record-pdf/issues",
+        "source": "https://github.com/amjadiqbal/filament-record-pdf"
+    },
+    "require": {
+        "php": "^8.2",
+        "dompdf/dompdf": "^3.0",
+        "filament/filament": "^4.0|^5.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "spatie/laravel-package-tools": "^1.16",
+        "spatie/laravel-pdf": "^2.14"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+        "pestphp/pest-plugin-livewire": "^3.0|^4.0",
+        "spatie/laravel-medialibrary": "^11.0"
+    },
+    "suggest": {
+        "ext-zip": "Needed by the bulk ZIP download action",
+        "spatie/browsershot": "Use the Browsershot (Chromium) driver instead of dompdf",
+        "spatie/laravel-medialibrary": "Save PDFs into a media collection on the record"
+    },
+    "autoload": {
+        "psr-4": {
+            "AmjadIqbal\\FilamentRecordPdf\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AmjadIqbal\\FilamentRecordPdf\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "lint": "vendor/bin/pint --test",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AmjadIqbal\\FilamentRecordPdf\\FilamentRecordPdfServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
